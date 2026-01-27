@@ -1,13 +1,7 @@
-import React, { useMemo, useState } from 'react'
-import { isNonEmptyString } from '../lib/storage.js'
+import React, { useState } from 'react'
 
 export default function AuthScreen({ onContinueOffline }) {
   const [name, setName] = useState('')
-
-  const greeting = useMemo(() => {
-    const trimmed = name.trim()
-    return isNonEmptyString(trimmed) ? `Welcome, ${trimmed}` : 'Welcome'
-  }, [name])
 
   return (
     <div className="min-h-screen px-4 py-10 text-slate-100">
@@ -18,7 +12,7 @@ export default function AuthScreen({ onContinueOffline }) {
               <span className="text-3xl">📋</span>
             </div>
             <h1 className="text-3xl font-extrabold tracking-tight">Task Manager</h1>
-            <p className="mt-2 text-sm text-slate-300">Clean, fast, and offline-first.</p>
+            <p className="mt-2 text-sm text-slate-300">A clean to-do list.</p>
           </div>
 
           <div className="mt-8 space-y-4">
@@ -37,25 +31,8 @@ export default function AuthScreen({ onContinueOffline }) {
               onClick={() => onContinueOffline({ name: name.trim() })}
               className="w-full rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 px-4 py-3 font-semibold text-white shadow-lg shadow-blue-500/20 transition hover:from-blue-500 hover:to-indigo-500"
             >
-              Continue in Offline Mode
+              Continue
             </button>
-
-            <div className="rounded-2xl border border-white/10 bg-white/5 p-4 text-xs text-slate-300">
-              <div className="font-semibold text-slate-200">Tips</div>
-              <ul className="mt-2 list-disc space-y-1 pl-5">
-                <li>Enter adds a task; double click edits.</li>
-                <li>Tasks autosave in your browser.</li>
-                <li>Use Private/Public to keep two lists.</li>
-              </ul>
-            </div>
-
-            <div className="text-center text-xs text-slate-400">
-              {greeting}
-            </div>
-          </div>
-
-          <div className="mt-8 border-t border-white/10 pt-5 text-center text-xs text-slate-400">
-            Legacy HTML version preserved in <span className="font-semibold">legacy/index.legacy.html</span>
           </div>
         </div>
       </div>

@@ -1,19 +1,9 @@
 import React, { useMemo, useRef, useState } from 'react'
-import { Download, FileUp, LogOut, Plus, Search, Sparkles, Trash2 } from 'lucide-react'
+import { Download, FileUp, LogOut, Plus, Search, Trash2 } from 'lucide-react'
 import clsx from 'clsx'
 import TaskItem from './TaskItem.jsx'
 import Toast from './Toast.jsx'
 import { clampText, downloadJson, isNonEmptyString, makeId, safeJsonParse } from '../lib/storage.js'
-
-function seedTasks() {
-  return [
-    { id: makeId(), text: '👋 Welcome to Task Manager!', completed: false, priority: 'high', createdAt: Date.now() },
-    { id: makeId(), text: '✨ Add tasks using the input above', completed: false, priority: 'medium', createdAt: Date.now() + 1 },
-    { id: makeId(), text: '🔄 Everything auto-saves offline', completed: false, priority: 'low', createdAt: Date.now() + 2 },
-    { id: makeId(), text: '✅ Click the check to complete', completed: true, priority: 'medium', createdAt: Date.now() + 3 },
-    { id: makeId(), text: '📝 Double click text to edit', completed: false, priority: 'low', createdAt: Date.now() + 4 }
-  ]
-}
 
 const PRIORITY_ORDER = { high: 1, medium: 2, low: 3 }
 
@@ -65,7 +55,7 @@ export default function TaskManager({ session, lists, setLists, listKey, setList
     setLists((prev) => {
       const current = prev?.[listKey] ?? []
       const next = updater(current)
-      return { ...(prev ?? { private: seedTasks(), public: [] }), [listKey]: next }
+      return { ...(prev ?? { private: [], public: [] }), [listKey]: next }
     })
   }
 
@@ -179,9 +169,6 @@ export default function TaskManager({ session, lists, setLists, listKey, setList
             <div>
               <div className="flex items-center gap-2">
                 <h1 className="text-3xl font-extrabold tracking-tight">Task Manager</h1>
-                <span className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-2 py-1 text-xs text-slate-300">
-                  <Sparkles className="size-4" /> Offline-first
-                </span>
               </div>
               <p className="mt-1 text-sm text-slate-300">
                 {session?.name ? `Signed in as ${session.name}` : 'Signed in'} • {stats.active} active • {stats.completed} done
@@ -378,9 +365,6 @@ export default function TaskManager({ session, lists, setLists, listKey, setList
             )}
           </ul>
 
-          <div className="mt-8 border-t border-white/10 pt-6 text-center text-xs text-slate-400">
-            Built with React • Legacy kept in <span className="font-semibold">legacy/</span>
-          </div>
         </div>
       </div>
 
