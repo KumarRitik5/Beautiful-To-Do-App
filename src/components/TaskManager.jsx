@@ -171,7 +171,7 @@ export default function TaskManager({ session, lists, setLists, listKey, setList
                 <h1 className="text-3xl font-extrabold tracking-tight">Task Manager</h1>
               </div>
               <p className="mt-1 text-sm text-slate-300">
-                {session?.name ? `Signed in as ${session.name}` : 'Signed in'} • {stats.active} active • {stats.completed} done
+                {stats.active} active • {stats.completed} done
               </p>
             </div>
 

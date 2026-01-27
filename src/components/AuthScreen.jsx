@@ -12,7 +12,6 @@ export default function AuthScreen({ onContinueOffline }) {
               <span className="text-3xl">📋</span>
             </div>
             <h1 className="text-3xl font-extrabold tracking-tight">Task Manager</h1>
-            <p className="mt-2 text-sm text-slate-300">A clean to-do list.</p>
           </div>
 
           <div className="mt-8 space-y-4">
