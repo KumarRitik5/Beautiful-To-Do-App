@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { ListTodo } from 'lucide-react'
 
 export default function AuthScreen({ onContinueOffline }) {
   const [name, setName] = useState('')
@@ -9,7 +10,7 @@ export default function AuthScreen({ onContinueOffline }) {
         <div className="rounded-[28px] border border-white/10 bg-slate-900/50 p-8 shadow-soft backdrop-blur">
           <div className="text-center">
             <div className="mx-auto mb-4 grid size-16 place-items-center rounded-2xl bg-gradient-to-br from-blue-500/20 to-fuchsia-500/20">
-              <span className="text-3xl">📋</span>
+              <ListTodo className="size-8 text-slate-100" aria-hidden="true" />
             </div>
             <h1 className="text-3xl font-extrabold tracking-tight">Task Manager</h1>
           </div>
