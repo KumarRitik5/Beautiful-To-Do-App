@@ -1,0 +1,1175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beautiful To-Do App</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #111827;
+            background-image: radial-gradient(at 0% 0%, #1a233b 0, transparent 50%), radial-gradient(at 100% 100%, #1a233b 0, transparent 50%);
+            color: #f9fafb;
+        }
+        .container {
+            max-width: 720px;
+            width: 95%;
+            margin: 2rem auto;
+            background-color: #1f2937;
+            padding: 3rem;
+            border-radius: 2rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        .task-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1.25rem 1.5rem;
+            margin-bottom: 0.75rem;
+            background-color: #374151;
+            border-radius: 1rem;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .task-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .task-item.completed {
+            background-color: #4b5563;
+        }
+        .task-item.completed .task-text {
+            text-decoration: line-through;
+            color: #9ca3af;
+        }
+        .task-content {
+            display: flex;
+            flex-grow: 1;
+            align-items: center;
+            word-break: break-word;
+        }
+        .task-text {
+            flex-grow: 1;
+            margin-left: 1rem;
+            cursor: pointer;
+            font-size: 1.125rem;
+        }
+        .task-buttons {
+            display: flex;
+            gap: 0.75rem;
+            opacity: 0;
+            transition: opacity 0.2s ease-in-out;
+        }
+        .task-item:hover .task-buttons {
+            opacity: 1;
+        }
+        .icon-btn {
+            background-color: #4f46e5;
+            color: #eef2ff;
+            padding: 0.5rem;
+            border-radius: 9999px;
+            transition: background-color 0.2s, transform 0.2s;
+            transform: scale(0.9);
+        }
+        .icon-btn:hover {
+            background-color: #6366f1;
+            transform: scale(1);
+        }
+        .delete-btn {
+            background-color: #ef4444;
+        }
+        .delete-btn:hover {
+            background-color: #f87171;
+        }
+        .user-info {
+            font-size: 0.75rem;
+            color: #6b7280;
+            word-wrap: break-word;
+            text-align: center;
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 1px solid #374151;
+        }
+        
+        /* App Footer Styling */
+        .app-footer {
+            margin-top: 1.5rem;
+            padding-top: 1rem;
+            border-top: 1px solid #374151;
+        }
+        
+        .footer-maker {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+        
+        .footer-text {
+            color: #9ca3af;
+        }
+        
+        .footer-name {
+            color: #3b82f6;
+            font-weight: 600;
+        }
+        
+        .footer-links {
+            display: flex;
+            gap: 0.75rem;
+            align-items: center;
+        }
+        
+        .footer-links a {
+            color: #6b7280;
+            transition: all 0.2s ease;
+            padding: 0.25rem;
+            border-radius: 0.25rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        .footer-links a:hover {
+            color: #3b82f6;
+            background-color: rgba(59, 130, 246, 0.1);
+            transform: translateY(-1px);
+        }
+        
+        /* Responsive footer */
+        @media (max-width: 640px) {
+            .footer-maker {
+                flex-direction: column;
+                gap: 0.75rem;
+            }
+        }
+        .filter-btn.active, .sort-btn.active {
+            background-color: #3b82f6;
+            color: white;
+            box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.5);
+        }
+        .priority-low { background-color: #22c55e; }
+        .priority-medium { background-color: #f59e0b; }
+        .priority-high { background-color: #ef4444; }
+        .priority-dot {
+            width: 1rem;
+            height: 1rem;
+            border-radius: 9999px;
+            flex-shrink: 0;
+        }
+        .login-container {
+            max-width: 420px;
+            width: 95%;
+            margin: 4rem auto;
+            background-color: #1f2937;
+            padding: 2.5rem;
+            border-radius: 2rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .login-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        .form-label {
+            font-weight: 500;
+            color: #e5e7eb;
+            font-size: 0.875rem;
+        }
+        .form-input {
+            padding: 0.75rem 1rem;
+            background-color: #374151;
+            border: 1px solid #4b5563;
+            border-radius: 0.75rem;
+            color: #f9fafb;
+            font-size: 1rem;
+            transition: all 0.2s ease;
+        }
+        .form-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+            transform: translateY(-1px);
+        }
+        .login-btn {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+            padding: 0.875rem 1.5rem;
+            border-radius: 0.75rem;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+        }
+        .login-btn:hover {
+            background: linear-gradient(135deg, #2563eb, #1e40af);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+        }
+        .login-btn:disabled {
+            background: #6b7280;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        .auth-toggle {
+            text-align: center;
+            color: #9ca3af;
+            font-size: 0.875rem;
+        }
+        .auth-toggle button {
+            color: #3b82f6;
+            background: none;
+            border: none;
+            cursor: pointer;
+            text-decoration: underline;
+            transition: color 0.2s ease;
+        }
+        .auth-toggle button:hover {
+            color: #60a5fa;
+        }
+        .error-message {
+            color: #ef4444;
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+            padding: 0.5rem;
+            background-color: rgba(239, 68, 68, 0.1);
+            border-radius: 0.5rem;
+            border-left: 3px solid #ef4444;
+        }
+        .success-message {
+            color: #10b981;
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+            padding: 0.5rem;
+            background-color: rgba(16, 185, 129, 0.1);
+            border-radius: 0.5rem;
+            border-left: 3px solid #10b981;
+        }
+        .hidden {
+            display: none !important;
+        }
+        
+        /* Animation for the login container */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .login-container {
+            animation: fadeInUp 0.6s ease-out;
+        }
+        
+        /* Maker Details Styling */
+        .maker-details {
+            margin-top: 1.5rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .maker-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.05), rgba(147, 51, 234, 0.05));
+            border-radius: 0.75rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .maker-avatar {
+            font-size: 1.5rem;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+        
+        .maker-content {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .maker-name {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #f9fafb;
+            margin: 0 0 0.25rem 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .maker-description {
+            font-size: 0.75rem;
+            color: #9ca3af;
+            margin: 0 0 0.5rem 0;
+            line-height: 1.2;
+        }
+        
+        .maker-links {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .maker-link {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            color: #60a5fa;
+            text-decoration: none;
+            font-size: 0.75rem;
+            transition: all 0.2s ease;
+            padding: 0.25rem 0.375rem;
+            border-radius: 0.375rem;
+            white-space: nowrap;
+        }
+        
+        .maker-link:hover {
+            color: #3b82f6;
+            background-color: rgba(59, 130, 246, 0.1);
+        }
+        
+        .maker-link svg {
+            width: 12px;
+            height: 12px;
+            flex-shrink: 0;
+        }
+        
+        /* Responsive design for maker details */
+        @media (max-width: 480px) {
+            .maker-info {
+                flex-direction: column;
+                text-align: center;
+                gap: 0.5rem;
+            }
+            
+            .maker-links {
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+            
+            .maker-name {
+                white-space: normal;
+                text-overflow: unset;
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen p-4">
+
+    <!-- Login Page -->
+    <div id="loginPage" class="login-container">
+        <div class="text-center mb-8">
+            <div class="text-6xl mb-4">📋</div>
+            <h1 class="text-4xl font-bold text-white mb-2">Task Manager</h1>
+            <p class="text-gray-400 text-lg">Organize your life, one task at a time</p>
+        </div>
+        
+        <form id="loginForm" class="login-form">
+            <div class="form-group">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" id="email" class="form-input" placeholder="Enter your email" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="password" class="form-label">Password</label>
+                <input type="password" id="password" class="form-input" placeholder="Enter your password" required>
+            </div>
+            
+            <div class="form-group" id="confirmPasswordGroup" style="display: none;">
+                <label for="confirmPassword" class="form-label">Confirm Password</label>
+                <input type="password" id="confirmPassword" class="form-input" placeholder="Confirm your password">
+            </div>
+            
+            <button type="submit" id="authSubmitBtn" class="login-btn">Sign In</button>
+            
+            <div id="errorMessage" class="error-message" style="display: none;"></div>
+            <div id="successMessage" class="success-message" style="display: none;"></div>
+        </form>
+        
+        <div class="auth-toggle">
+            <p id="authToggleText">Don't have an account? <button type="button" id="authToggleBtn">Sign up</button></p>
+        </div>
+        
+        <div class="text-center mt-6">
+            <div class="relative">
+                <div class="absolute inset-0 flex items-center">
+                    <div class="w-full border-t border-gray-600"></div>
+                </div>
+                <div class="relative flex justify-center text-sm">
+                    <span class="px-2 bg-gray-800 text-gray-400">or</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="text-center mt-6">
+            <button type="button" id="demoModeBtn" class="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg">
+                ✨ Try Demo Mode
+            </button>
+            <p class="text-gray-500 text-sm mt-2">No signup required • Works offline</p>
+        </div>
+
+        <div id="firebaseStatus" style="display: none;">
+            <!-- Hidden status -->
+        </div>
+        
+        <!-- Maker Details -->
+        <div class="maker-details">
+            <div class="maker-info">
+                <div class="maker-avatar">👨‍💻</div>
+                <div class="maker-content">
+                    <h3 class="maker-name">Made with ❤️ by Ritik Kumar</h3>
+                    <!-- <p class="maker-description">Full Stack Developer & UI/UX Enthusiast</p> -->
+                    <div class="maker-links">
+                        <a href="https://github.com/KumarRitik5" target="_blank" class="maker-link">
+                            <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                            </svg>
+                            GitHub
+                        </a>
+                        <a href="https://www.linkedin.com/in/ritik-kumar-ba7931293/" target="_blank" class="maker-link">
+                            <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                            </svg>
+                            LinkedIn
+                        </a>
+                        <a href="mailto:ritikkumar12bicbly@gmail.com" class="maker-link">
+                            <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M24 5.457v13.909c0 .904-.732 1.636-1.636 1.636h-3.819V11.73L12 16.64l-6.545-4.91v9.273H1.636A1.636 1.636 0 0 1 0 19.366V5.457c0-.904.732-1.636 1.636-1.636h3.819l6.545 4.91 6.545-4.91h3.819A1.636 1.636 0 0 1 24 5.457z"/>
+                            </svg>
+                            Email
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main App Container -->
+    <div class="container hidden" id="mainApp">
+        <div class="flex flex-col md:flex-row md:justify-between md:items-center mb-8">
+            <h1 class="text-4xl font-extrabold text-white mb-4 md:mb-0">Task Manager</h1>
+            <div class="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2">
+                <div class="flex space-x-2">
+                    <button id="privateBtn" class="bg-blue-600 text-white font-semibold py-2 px-4 rounded-full transition-colors active">My Private List</button>
+                    <button id="publicBtn" class="bg-gray-700 text-gray-300 font-semibold py-2 px-4 rounded-full transition-colors">Shared Public List</button>
+                </div>
+                <button id="signOutBtn" class="bg-red-600 text-white font-semibold py-2 px-4 rounded-full hover:bg-red-700 transition-colors">Sign Out</button>
+            </div>
+        </div>
+
+        <!-- Add Task Section -->
+        <div class="flex space-x-2 mb-6">
+            <input type="text" id="taskInput" placeholder="Enter a new task..." class="flex-grow p-4 bg-gray-700 text-gray-100 border border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400">
+            <select id="priorityInput" class="bg-gray-700 text-gray-100 p-4 border border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <option value="low">Low Priority</option>
+                <option value="medium">Medium Priority</option>
+                <option value="high">High Priority</option>
+            </select>
+            <button id="addTaskBtn" class="bg-blue-600 text-white font-semibold p-4 rounded-xl hover:bg-blue-700 transition duration-300 transform hover:scale-105">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                </svg>
+            </button>
+        </div>
+        
+        <!-- Controls and Filters -->
+        <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+            <div class="flex space-x-2 flex-grow">
+                <button id="filterAll" class="filter-btn active bg-gray-700 text-gray-300 font-medium py-2 px-4 rounded-full text-sm transition duration-200">All</button>
+                <button id="filterActive" class="filter-btn bg-gray-700 text-gray-300 font-medium py-2 px-4 rounded-full text-sm transition duration-200">Active</button>
+                <button id="filterCompleted" class="filter-btn bg-gray-700 text-gray-300 font-medium py-2 px-4 rounded-full text-sm transition duration-200">Completed</button>
+            </div>
+            <div class="flex space-x-2">
+                <button id="sortByPriority" class="sort-btn bg-gray-700 text-gray-300 font-medium py-2 px-4 rounded-full text-sm transition duration-200">Sort by Priority</button>
+                <button id="clearCompletedBtn" class="clear-btn bg-red-500 text-white font-medium py-2 px-4 rounded-full text-sm hover:bg-red-600 transition duration-200">Clear Completed</button>
+            </div>
+        </div>
+
+        <ul id="taskList" class="space-y-3">
+            <!-- Tasks will be rendered here -->
+            <li id="loadingMessage" class="text-gray-500 text-center py-4">Loading tasks...</li>
+        </ul>
+
+        <div id="userIdContainer" class="user-info"></div>
+        
+        <!-- Maker Details in Main App -->
+        <div class="app-footer">
+            <div class="footer-maker">
+                <span class="footer-text">Built with ❤️ by</span>
+                <strong class="footer-name">Ritik Kumar</strong>
+                <div class="footer-links">
+                    <a href="https://github.com/KumarRitik5" target="_blank" title="GitHub">
+                        <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                        </svg>
+                    </a>
+                    <a href="https://www.linkedin.com/in/ritik-kumar-ba7931293/" target="_blank" title="LinkedIn">
+                        <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                        </svg>
+                    </a>
+                    <a href="mailto:ritikkumar12bicbly@gmail.com" title="Email">
+                        <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M24 5.457v13.909c0 .904-.732 1.636-1.636 1.636h-3.819V11.73L12 16.64l-6.545-4.91v9.273H1.636A1.636 1.636 0 0 1 0 19.366V5.457c0-.904.732-1.636 1.636-1.636h3.819l6.545 4.91 6.545-4.91h3.819A1.636 1.636 0 0 1 24 5.457z"/>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, onSnapshot, addDoc, deleteDoc, updateDoc, doc, query, writeBatch } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Global variables provided by the environment
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'demo-todo-app';
+        
+        // You can replace this with your actual Firebase configuration
+        // To get your config, go to Firebase Console > Project Settings > General > Your apps
+        const defaultFirebaseConfig = {
+            // Replace with your actual Firebase config to enable authentication
+            // For now, this will use demo mode
+            apiKey: "your-api-key-here",
+            authDomain: "your-project.firebaseapp.com",
+            projectId: "your-project-id",
+            storageBucket: "your-project.appspot.com",
+            messagingSenderId: "123456789",
+            appId: "1:123456789:web:your-app-id"
+        };
+        
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : defaultFirebaseConfig;
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+        // Firestore and Auth instances
+        let db;
+        let auth;
+        let app;
+        let userId = null;
+        let currentFilter = 'all';
+        let isSortedByPriority = false;
+        let currentMode = 'private'; // 'private' or 'public'
+        let isFirebaseInitialized = false;
+        
+        // Priority order for sorting
+        const priorityOrder = { 'high': 1, 'medium': 2, 'low': 3 };
+
+        // Authentication elements
+        const loginPage = document.getElementById('loginPage');
+        const mainApp = document.getElementById('mainApp');
+        const loginForm = document.getElementById('loginForm');
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+        const confirmPasswordInput = document.getElementById('confirmPassword');
+        const confirmPasswordGroup = document.getElementById('confirmPasswordGroup');
+        const authSubmitBtn = document.getElementById('authSubmitBtn');
+        const authToggleBtn = document.getElementById('authToggleBtn');
+        const authToggleText = document.getElementById('authToggleText');
+        const demoModeBtn = document.getElementById('demoModeBtn');
+        const errorMessage = document.getElementById('errorMessage');
+        const successMessage = document.getElementById('successMessage');
+        const firebaseStatus = document.getElementById('firebaseStatus');
+        
+        let isSignUpMode = false;
+        let currentUser = null;
+
+        const taskInput = document.getElementById('taskInput');
+        const priorityInput = document.getElementById('priorityInput');
+        const addTaskBtn = document.getElementById('addTaskBtn');
+        const taskList = document.getElementById('taskList');
+        const userIdContainer = document.getElementById('userIdContainer');
+        const clearCompletedBtn = document.getElementById('clearCompletedBtn');
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        const sortByPriorityBtn = document.getElementById('sortByPriority');
+        const privateBtn = document.getElementById('privateBtn');
+        const publicBtn = document.getElementById('publicBtn');
+        const signOutBtn = document.getElementById('signOutBtn');
+        
+        let allTasks = [];
+
+        const initializeFirebase = async () => {
+            try {
+                // Check if we have a real Firebase config (not the placeholder)
+                if (!firebaseConfig.apiKey || 
+                    firebaseConfig.apiKey === "your-api-key-here" || 
+                    firebaseConfig.apiKey === "demo-api-key" ||
+                    firebaseConfig.authDomain.includes("your-project")) {
+                    
+                    // Firebase not configured - demo mode only
+                    isFirebaseInitialized = false;
+                    return;
+                }
+                
+                app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                auth = getAuth(app);
+                isFirebaseInitialized = true;
+                
+                onAuthStateChanged(auth, (user) => {
+                    if (user) {
+                        currentUser = user;
+                        userId = user.uid;
+                        userIdContainer.textContent = `Logged in as: ${user.email || user.uid}`;
+                        showMainApp();
+                        setupRealtimeListener();
+                    } else {
+                        currentUser = null;
+                        userId = null;
+                        showLoginPage();
+                    }
+                });
+
+            } catch (e) {
+                console.error("Error initializing Firebase:", e);
+                isFirebaseInitialized = false;
+                // Silently fall back to demo mode
+            }
+        };
+
+        // Demo mode for when Firebase is not available
+        const initializeDemoMode = () => {
+            userId = 'demo-user-' + Math.random().toString(36).substr(2, 9);
+            userIdContainer.innerHTML = `
+                <div style="text-align: center;">
+                    <div style="color: #f59e0b; font-weight: 600; margin-bottom: 0.5rem;">
+                        🚀 Demo Mode Active
+                    </div>
+                    <div style="font-size: 0.75rem; color: #9ca3af;">
+                        Your tasks are saved locally in your browser
+                    </div>
+                </div>
+            `;
+            
+            // Load demo tasks from localStorage
+            const savedTasks = localStorage.getItem('demo-tasks');
+            if (savedTasks) {
+                allTasks = JSON.parse(savedTasks);
+            } else {
+                allTasks = [
+                    { id: '1', text: '👋 Welcome to Task Manager!', completed: false, priority: 'high' },
+                    { id: '2', text: '✨ Add your own tasks by typing above', completed: false, priority: 'medium' },
+                    { id: '3', text: '🔄 Tasks auto-save to your browser', completed: false, priority: 'low' },
+                    { id: '4', text: '✅ Click to mark tasks as completed', completed: true, priority: 'medium' },
+                    { id: '5', text: '🗑️ Hover over tasks to see edit/delete options', completed: false, priority: 'low' }
+                ];
+                saveDemoTasks();
+            }
+            
+            showMainApp();
+            renderTasks();
+            
+            // Show a welcome message
+            setTimeout(() => {
+                if (allTasks.length <= 5) { // Only show if user hasn't added many tasks
+                    const welcomeMsg = document.createElement('div');
+                    welcomeMsg.innerHTML = `
+                        <div style="background-color: #1e40af; color: white; padding: 1rem; border-radius: 0.5rem; margin-bottom: 1rem; text-align: center;">
+                            <strong>🎉 Welcome to Demo Mode!</strong><br>
+                            <span style="font-size: 0.875rem;">Try adding, editing, and organizing your tasks. Everything saves locally!</span>
+                        </div>
+                    `;
+                    taskList.parentNode.insertBefore(welcomeMsg, taskList);
+                    
+                    // Remove welcome message after 8 seconds
+                    setTimeout(() => {
+                        if (welcomeMsg.parentNode) {
+                            welcomeMsg.parentNode.removeChild(welcomeMsg);
+                        }
+                    }, 8000);
+                }
+            }, 500);
+        };
+
+        const saveDemoTasks = () => {
+            localStorage.setItem('demo-tasks', JSON.stringify(allTasks));
+        };
+
+        // Authentication functions
+        const showError = (message) => {
+            errorMessage.textContent = message;
+            errorMessage.style.display = 'block';
+            successMessage.style.display = 'none';
+        };
+
+        const showSuccess = (message) => {
+            successMessage.textContent = message;
+            successMessage.style.display = 'block';
+            errorMessage.style.display = 'none';
+        };
+
+        const hideMessages = () => {
+            errorMessage.style.display = 'none';
+            successMessage.style.display = 'none';
+        };
+
+        const toggleAuthMode = () => {
+            isSignUpMode = !isSignUpMode;
+            if (isSignUpMode) {
+                authSubmitBtn.textContent = 'Sign Up';
+                authToggleText.innerHTML = 'Already have an account? <button type="button" id="authToggleBtn">Sign in</button>';
+                confirmPasswordGroup.style.display = 'block';
+                confirmPasswordInput.required = true;
+            } else {
+                authSubmitBtn.textContent = 'Sign In';
+                authToggleText.innerHTML = 'Don\'t have an account? <button type="button" id="authToggleBtn">Sign up</button>';
+                confirmPasswordGroup.style.display = 'none';
+                confirmPasswordInput.required = false;
+            }
+            // Re-attach event listener to the new button
+            document.getElementById('authToggleBtn').addEventListener('click', toggleAuthMode);
+            hideMessages();
+        };
+
+        const handleAuth = async (email, password, isSignUp = false) => {
+            try {
+                // Check if Firebase is initialized
+                if (!isFirebaseInitialized || !auth) {
+                    showError('Authentication service is not available. Please try demo mode.');
+                    return;
+                }
+
+                authSubmitBtn.disabled = true;
+                authSubmitBtn.textContent = isSignUp ? 'Creating Account...' : 'Signing In...';
+                
+                if (isSignUp) {
+                    if (password !== confirmPasswordInput.value) {
+                        throw new Error('Passwords do not match');
+                    }
+                    await createUserWithEmailAndPassword(auth, email, password);
+                    showSuccess('Account created successfully!');
+                } else {
+                    await signInWithEmailAndPassword(auth, email, password);
+                    showSuccess('Signed in successfully!');
+                }
+                
+                // Clear form
+                loginForm.reset();
+                
+            } catch (error) {
+                console.error('Authentication error:', error);
+                let errorMsg = 'Authentication failed. Please try again.';
+                
+                switch (error.code) {
+                    case 'auth/email-already-in-use':
+                        errorMsg = 'Email is already registered. Please sign in instead.';
+                        break;
+                    case 'auth/invalid-email':
+                        errorMsg = 'Please enter a valid email address.';
+                        break;
+                    case 'auth/operation-not-allowed':
+                        errorMsg = 'Email/password accounts are not enabled.';
+                        break;
+                    case 'auth/weak-password':
+                        errorMsg = 'Password should be at least 6 characters.';
+                        break;
+                    case 'auth/user-disabled':
+                        errorMsg = 'This account has been disabled.';
+                        break;
+                    case 'auth/user-not-found':
+                        errorMsg = 'No account found with this email.';
+                        break;
+                    case 'auth/wrong-password':
+                        errorMsg = 'Incorrect password.';
+                        break;
+                    default:
+                        errorMsg = error.message;
+                }
+                
+                showError(errorMsg);
+            } finally {
+                authSubmitBtn.disabled = false;
+                authSubmitBtn.textContent = isSignUp ? 'Sign Up' : 'Sign In';
+            }
+        };
+
+        const showMainApp = () => {
+            loginPage.classList.add('hidden');
+            mainApp.classList.remove('hidden');
+        };
+
+        const showLoginPage = () => {
+            loginPage.classList.remove('hidden');
+            mainApp.classList.add('hidden');
+        };
+
+        const handleSignOut = async () => {
+            try {
+                if (auth && isFirebaseInitialized) {
+                    await signOut(auth);
+                }
+                currentUser = null;
+                userId = null;
+                allTasks = [];
+                showLoginPage();
+            } catch (error) {
+                console.error('Sign out error:', error);
+                // Force logout even if there's an error
+                currentUser = null;
+                userId = null;
+                allTasks = [];
+                showLoginPage();
+            }
+        };
+
+        const setupRealtimeListener = () => {
+            if (!db || !userId || !isFirebaseInitialized) {
+                console.warn("Cannot setup realtime listener - Firebase not initialized or user not authenticated");
+                return;
+            }
+            
+            const collectionPath = currentMode === 'private'
+                ? `artifacts/${appId}/users/${userId}/tasks`
+                : `artifacts/${appId}/public/data/tasks`;
+
+            const tasksCollectionRef = collection(db, collectionPath);
+            const q = query(tasksCollectionRef);
+
+            onSnapshot(q, (snapshot) => {
+                allTasks = snapshot.docs.map(doc => ({
+                    id: doc.id,
+                    ...doc.data()
+                }));
+                renderTasks();
+            }, (error) => {
+                console.error("Error listening to tasks:", error);
+                // If there's an error with realtime updates, fall back to demo mode
+                showError("Connection lost. Switching to offline mode.");
+                setTimeout(() => {
+                    initializeDemoMode();
+                }, 2000);
+            });
+        };
+
+        const renderTasks = () => {
+            taskList.innerHTML = '';
+            const loadingMessage = document.getElementById('loadingMessage');
+            if (loadingMessage) loadingMessage.style.display = 'none';
+
+            let filteredTasks = allTasks;
+            if (currentFilter === 'active') {
+                filteredTasks = allTasks.filter(task => !task.completed);
+            } else if (currentFilter === 'completed') {
+                filteredTasks = allTasks.filter(task => task.completed);
+            }
+            
+            if (isSortedByPriority) {
+                filteredTasks.sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]);
+            }
+
+            if (filteredTasks.length === 0) {
+                const noTasksMessage = document.createElement('li');
+                noTasksMessage.textContent = 'No tasks to display.';
+                noTasksMessage.className = 'text-gray-500 text-center py-4';
+                taskList.appendChild(noTasksMessage);
+            } else {
+                filteredTasks.forEach(task => createTaskElement(task));
+            }
+        };
+
+        const createTaskElement = (task) => {
+            const li = document.createElement('li');
+            li.className = `task-item rounded-xl ${task.completed ? 'completed' : ''}`;
+            li.setAttribute('data-id', task.id);
+
+            const contentDiv = document.createElement('div');
+            contentDiv.className = 'task-content';
+            li.appendChild(contentDiv);
+
+            const priorityDot = document.createElement('div');
+            priorityDot.className = `priority-dot priority-${task.priority}`;
+            contentDiv.appendChild(priorityDot);
+
+            const textSpan = document.createElement('span');
+            textSpan.className = 'task-text';
+            textSpan.textContent = task.text;
+            textSpan.ondblclick = () => startEditing(li, task.id, task.text);
+            contentDiv.appendChild(textSpan);
+
+            const buttonsDiv = document.createElement('div');
+            buttonsDiv.className = 'task-buttons';
+            li.appendChild(buttonsDiv);
+            
+            const toggleBtn = document.createElement('button');
+            toggleBtn.className = 'icon-btn bg-gray-500 hover:bg-gray-600';
+            toggleBtn.innerHTML = task.completed
+                ? `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
+                     <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                   </svg>`
+                : `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                     <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                   </svg>`;
+            toggleBtn.onclick = () => toggleTaskCompletion(task.id, task.completed);
+            buttonsDiv.appendChild(toggleBtn);
+            
+            const deleteBtn = document.createElement('button');
+            deleteBtn.className = 'icon-btn delete-btn';
+            deleteBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                     <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                   </svg>`;
+            deleteBtn.onclick = () => deleteTask(task.id);
+            buttonsDiv.appendChild(deleteBtn);
+
+            taskList.appendChild(li);
+        };
+
+        const addTask = async () => {
+            const taskText = taskInput.value.trim();
+            if (taskText === "") return;
+
+            const newTask = {
+                id: Date.now().toString(),
+                text: taskText,
+                completed: false,
+                priority: priorityInput.value
+            };
+
+            if (db && userId) {
+                // Firebase mode
+                const collectionPath = currentMode === 'private'
+                    ? `artifacts/${appId}/users/${userId}/tasks`
+                    : `artifacts/${appId}/public/data/tasks`;
+
+                try {
+                    const tasksCollectionRef = collection(db, collectionPath);
+                    await addDoc(tasksCollectionRef, {
+                        text: taskText,
+                        completed: false,
+                        priority: priorityInput.value
+                    });
+                    taskInput.value = '';
+                } catch (e) {
+                    console.error("Error adding document: ", e);
+                }
+            } else {
+                // Demo mode
+                allTasks.push(newTask);
+                saveDemoTasks();
+                renderTasks();
+                taskInput.value = '';
+            }
+        };
+
+        const toggleTaskCompletion = async (taskId, currentStatus) => {
+            if (db && userId) {
+                // Firebase mode
+                const collectionPath = currentMode === 'private'
+                    ? `artifacts/${appId}/users/${userId}/tasks`
+                    : `artifacts/${appId}/public/data/tasks`;
+                
+                try {
+                    const taskDocRef = doc(db, collectionPath, taskId);
+                    await updateDoc(taskDocRef, {
+                        completed: !currentStatus
+                    });
+                } catch (e) {
+                    console.error("Error updating document: ", e);
+                }
+            } else {
+                // Demo mode
+                const task = allTasks.find(t => t.id === taskId);
+                if (task) {
+                    task.completed = !currentStatus;
+                    saveDemoTasks();
+                    renderTasks();
+                }
+            }
+        };
+
+        const deleteTask = async (taskId) => {
+            if (db && userId) {
+                // Firebase mode
+                const collectionPath = currentMode === 'private'
+                    ? `artifacts/${appId}/users/${userId}/tasks`
+                    : `artifacts/${appId}/public/data/tasks`;
+                    
+                try {
+                    const taskDocRef = doc(db, collectionPath, taskId);
+                    await deleteDoc(taskDocRef);
+                } catch (e) {
+                    console.error("Error deleting document: ", e);
+                }
+            } else {
+                // Demo mode
+                allTasks = allTasks.filter(task => task.id !== taskId);
+                saveDemoTasks();
+                renderTasks();
+            }
+        };
+        
+        const clearCompletedTasks = async () => {
+            if (db && userId) {
+                // Firebase mode
+                const collectionPath = currentMode === 'private'
+                    ? `artifacts/${appId}/users/${userId}/tasks`
+                    : `artifacts/${appId}/public/data/tasks`;
+                
+                const completedTasks = allTasks.filter(task => task.completed);
+                if (completedTasks.length === 0) return;
+
+                const batch = writeBatch(db);
+                completedTasks.forEach(task => {
+                    const taskRef = doc(db, collectionPath, task.id);
+                    batch.delete(taskRef);
+                });
+
+                try {
+                    await batch.commit();
+                } catch (e) {
+                    console.error("Error clearing completed tasks: ", e);
+                }
+            } else {
+                // Demo mode
+                allTasks = allTasks.filter(task => !task.completed);
+                saveDemoTasks();
+                renderTasks();
+            }
+        };
+
+        const startEditing = (li, taskId, initialText) => {
+            const textSpan = li.querySelector('.task-text');
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.value = initialText;
+            input.className = 'flex-grow p-2 bg-gray-600 border border-blue-400 rounded-lg focus:outline-none text-gray-100';
+            
+            li.replaceChild(input, textSpan);
+            input.focus();
+
+            const saveChanges = async () => {
+                const newText = input.value.trim();
+                if (newText && newText !== initialText) {
+                    if (db && userId) {
+                        // Firebase mode
+                        const collectionPath = currentMode === 'private'
+                            ? `artifacts/${appId}/users/${userId}/tasks`
+                            : `artifacts/${appId}/public/data/tasks`;
+                        try {
+                            const taskDocRef = doc(db, collectionPath, taskId);
+                            await updateDoc(taskDocRef, { text: newText });
+                        } catch (e) {
+                            console.error("Error updating task: ", e);
+                        }
+                    } else {
+                        // Demo mode
+                        const task = allTasks.find(t => t.id === taskId);
+                        if (task) {
+                            task.text = newText;
+                            saveDemoTasks();
+                            renderTasks();
+                        }
+                    }
+                }
+                restoreTaskElement(li, textSpan);
+            };
+
+            input.addEventListener('blur', saveChanges);
+            input.addEventListener('keypress', (event) => {
+                if (event.key === 'Enter') {
+                    saveChanges();
+                }
+            });
+        };
+        
+        const restoreTaskElement = (li, textSpan) => {
+            li.replaceChild(textSpan, li.querySelector('input'));
+        };
+
+        // Event listeners
+        addTaskBtn.addEventListener('click', addTask);
+        taskInput.addEventListener('keypress', (event) => {
+            if (event.key === 'Enter') {
+                addTask();
+            }
+        });
+
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                filterBtns.forEach(fBtn => fBtn.classList.remove('active'));
+                btn.classList.add('active');
+                currentFilter = btn.id.replace('filter', '').toLowerCase();
+                renderTasks();
+            });
+        });
+
+        sortByPriorityBtn.addEventListener('click', () => {
+            isSortedByPriority = !isSortedByPriority;
+            sortByPriorityBtn.classList.toggle('active', isSortedByPriority);
+            renderTasks();
+        });
+
+        clearCompletedBtn.addEventListener('click', clearCompletedTasks);
+        
+        privateBtn.addEventListener('click', () => {
+            currentMode = 'private';
+            privateBtn.classList.add('active');
+            publicBtn.classList.remove('active');
+            if (db && userId) {
+                setupRealtimeListener();
+            } else {
+                // In demo mode, just re-render existing tasks
+                renderTasks();
+            }
+        });
+
+        publicBtn.addEventListener('click', () => {
+            currentMode = 'public';
+            publicBtn.classList.add('active');
+            privateBtn.classList.remove('active');
+            if (db && userId) {
+                setupRealtimeListener();
+            } else {
+                // In demo mode, just re-render existing tasks
+                renderTasks();
+            }
+        });
+
+        // Authentication event listeners
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = emailInput.value.trim();
+            const password = passwordInput.value;
+            
+            if (email && password) {
+                handleAuth(email, password, isSignUpMode);
+            }
+        });
+
+        authToggleBtn.addEventListener('click', toggleAuthMode);
+
+        demoModeBtn.addEventListener('click', () => {
+            initializeDemoMode();
+        });
+
+        signOutBtn.addEventListener('click', handleSignOut);
+
+        // Initialize Firebase on page load
+        initializeFirebase();
+    </script>
+</body>
+</html>
