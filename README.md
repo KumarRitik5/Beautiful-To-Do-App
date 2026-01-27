@@ -1,8 +1,6 @@
 # Beautiful To-Do App (React)
 
-This project has been converted from a single-file HTML app into a modern React app (Vite + Tailwind).
-
-The original version is preserved at `legacy/index.legacy.html`.
+This project is a modern React app (Vite + Tailwind).
 
 ## Run locally
 
@@ -27,4 +25,4 @@ Then open the URL shown in the terminal (usually `http://localhost:5173`).
 
 ## Notes
 
-- If you want Firebase auth + sync again, we can add it back via `.env` and the Firebase SDK (the dependency is already included). Tell me and I’ll wire it up.
+- If you want cloud sync (Firebase/Supabase), tell me and I’ll wire it up.
