@@ -1,6 +1,19 @@
-# Beautiful To-Do App (React)
+# Beautiful To-Do App (Full Stack)
 
-This project is a modern React app (Vite + Tailwind).
+This project is a full-stack To-Do app built with:
+
+- Frontend: React + Vite + Tailwind
+- Backend: Vercel Serverless Functions (`/api/*`)
+- Data store: Vercel KV (with in-memory fallback for local development)
+
+## Features
+
+- Email/password auth (signup/login/logout)
+- Cookie-based server session
+- Cloud-synced private/public task lists
+- Add/edit/delete/complete/filter/search/sort tasks
+- Import/Export tasks as JSON
+- Deployable on Vercel as one project (frontend + backend)
 
 ## Run locally
 
@@ -12,17 +25,29 @@ This project is a modern React app (Vite + Tailwind).
 
 `npm run dev`
 
-Then open the URL shown in the terminal (usually `http://localhost:5173`).
+3) Open the shown URL (usually `http://localhost:5173`)
 
-## Features
+Local development works without KV (data is kept in-memory on backend process).
 
-- Offline-first (autosaves to localStorage)
-- Private/Public lists (two separate lists)
-- Add / edit (double click) / delete / complete tasks
-- Filter (All / Active / Done), search, sort by priority
-- Bulk actions (toggle all, clear done)
-- Import/Export tasks as JSON
+## Deploy on Vercel
 
-## Notes
+1) Push this repo to GitHub.
 
-- If you want cloud sync (Firebase/Supabase), tell me and I’ll wire it up.
+2) Import the project in Vercel.
+
+3) In Vercel dashboard, add **Vercel KV** storage to your project.
+
+4) Ensure these env vars exist in Vercel project settings:
+
+- `KV_REST_API_URL`
+- `KV_REST_API_TOKEN`
+
+5) Deploy.
+
+Your API will be available at `/api/*` on the same domain.
+
+## Optional frontend env vars
+
+- `VITE_API_BASE_URL` (optional)
+	- Leave empty for same-origin calls (recommended for Vercel).
+	- Set only if frontend and backend are on different domains.

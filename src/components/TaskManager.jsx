@@ -173,6 +173,13 @@ export default function TaskManager({ session, lists, setLists, listKey, setList
               <p className="mt-1 text-sm text-slate-300">
                 {stats.active} active • {stats.completed} done
               </p>
+              <p className="mt-1 text-xs text-slate-400">
+                {session?.syncStatus === 'saving'
+                  ? 'Syncing…'
+                  : session?.syncStatus === 'error'
+                    ? 'Sync failed (will retry on next change)'
+                    : 'Synced'}
+              </p>
             </div>
 
             <div className="flex flex-wrap items-center gap-2">
